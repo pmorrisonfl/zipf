@@ -3,17 +3,26 @@ Count the occurrences of all words in a text
 and output them in CSV format.
 """
 
+import re
 import argparse
 import string
 from collections import Counter
 
 import utilities as util
 
+def clean_word(word):
+    word = word.strip(string.punctuation)
+    word = word.translate(str.maketrans('', '', string.punctuation))
+    word = word.translate(str.maketrans({'\u2018': "", '\u2019': "", '\u201C': "", '\u201D': "", '\u2014': "", '\uFEFF': "", '\u2026': "", '\u00A3': ""}))
+    word = re.sub("^\\d","X",word) 
+    return word
+
 def count_words(reader):
     """Count the occurrence of each word in a string."""
     text = reader.read()
     chunks = text.split()
-    npunc = [word.strip(string.punctuation) for word in chunks]
+#    npunc = [word.strip(string.punctuation) for word in chunks]
+    npunc = [clean_word(word) for word in chunks]
     word_list = [word.lower() for word in npunc if word]
     word_counts = Counter(word_list)
     return word_counts
